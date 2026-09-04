@@ -1,6 +1,5 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-<<<<<<< HEAD
 import { ThemeProvider } from "next-themes";
 import { SerwistProvider } from "@serwist/next/react";
 import type { Metadata, Viewport } from "next";
@@ -62,17 +61,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </SerwistProvider>
         </ThemeProvider>
       </body>
-=======
-import { cn } from "@/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
-      <body>{children}</body>
->>>>>>> origin/main
     </html>
   );
 }
