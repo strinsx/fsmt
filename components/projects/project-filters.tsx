@@ -9,12 +9,12 @@ export function ProjectFilters() {
   return (
     <div className="flex flex-col gap-4 leading-relaxed lg:flex-row lg:items-center lg:justify-between">
       <div className="relative w-full lg:max-w-sm">
-        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search projects..." className="pl-8" />
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input placeholder="Search projects..." className="h-8 pl-8 text-xs" />
       </div>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <Select>
-          <SelectTrigger className="w-full sm:w-[150px]">
+          <SelectTrigger size="sm" className="w-full text-xs sm:w-[130px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -24,18 +24,18 @@ export function ProjectFilters() {
           </SelectContent>
         </Select>
         <Select>
-          <SelectTrigger className="w-full sm:w-[150px]">
+          <SelectTrigger size="sm" className="w-full text-xs sm:w-[130px]">
             <SelectValue placeholder="Monthly" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="monthly">Monthly</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline">
+        <Button variant="outline" size="sm" className="h-8 text-xs">
           <FileText />
           Export PDF
         </Button>
-        <Button variant="outline">
+        <Button variant="outline" size="sm" className="h-8 text-xs">
           <FileSpreadsheet />
           Export Excel
         </Button>

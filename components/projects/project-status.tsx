@@ -42,10 +42,10 @@ type ProjectStatusProps = {
 function StatusBadge({ status }: { status: Project["status"] }) {
   const variant = status === "active" ? "default" : status === "pending" ? "secondary" : "outline"
   const label = status.charAt(0).toUpperCase() + status.slice(1)
-  return <Badge variant={variant}>{label}</Badge>
+  return <Badge variant={variant} className="h-5 px-1.5 text-[10px]">{label}</Badge>
 }
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 10
 
 export function ProjectStatus({ projects }: ProjectStatusProps) {
   const [page, setPage] = React.useState(1)
@@ -85,30 +85,30 @@ export function ProjectStatus({ projects }: ProjectStatusProps) {
         <Table>
           <TableHeader className="[&_tr]:border-0">
             <TableRow className="border-0 hover:bg-transparent">
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Project ID</TableHead>
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Project Name</TableHead>
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Source</TableHead>
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Date</TableHead>
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Amount</TableHead>
-              <TableHead className="px-4 py-3 text-muted-foreground md:px-6 md:py-4">Status</TableHead>
-              <TableHead className="w-10 px-4 py-3 md:px-6 md:py-4">
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Project ID</TableHead>
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Project Name</TableHead>
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Source</TableHead>
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Date</TableHead>
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Amount</TableHead>
+              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Status</TableHead>
+              <TableHead className="w-8 px-2.5 py-2">
                 <span className="sr-only">Actions</span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedProjects.map((project) => (
-              <TableRow key={project.id} className="border-0">
-                <TableCell className="px-4 py-4 font-mono text-xs font-medium md:px-6 md:py-5">{project.id}</TableCell>
-                <TableCell className="px-4 py-4 font-medium md:px-6 md:py-5">{project.name}</TableCell>
-                <TableCell className="px-4 py-4 text-foreground md:px-6 md:py-5">{project.source}</TableCell>
-                <TableCell className="px-4 py-4 text-muted-foreground md:px-6 md:py-5">{project.date}</TableCell>
-                <TableCell className="px-4 py-4 font-medium md:px-6 md:py-5">{project.amount}</TableCell>
-                <TableCell className="px-4 py-4 md:px-6 md:py-5">
+              <TableRow key={project.id} className="border-0 h-9">
+                <TableCell className="px-2.5 py-2 font-mono text-xs font-medium">{project.id}</TableCell>
+                <TableCell className="px-2.5 py-2 text-xs font-medium">{project.name}</TableCell>
+                <TableCell className="px-2.5 py-2 text-xs text-foreground">{project.source}</TableCell>
+                <TableCell className="px-2.5 py-2 text-xs text-muted-foreground">{project.date}</TableCell>
+                <TableCell className="px-2.5 py-2 text-xs font-medium">{project.amount}</TableCell>
+                <TableCell className="px-2.5 py-2">
                   <StatusBadge status={project.status} />
                 </TableCell>
-                <TableCell className="px-4 py-4 md:px-6 md:py-5">
-                  <Button variant="ghost" size="icon-sm" aria-label={`Actions for ${project.name}`}>
+                <TableCell className="px-2.5 py-2">
+                  <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${project.name}`}>
                     <MoreHorizontal />
                   </Button>
                 </TableCell>
@@ -117,20 +117,20 @@ export function ProjectStatus({ projects }: ProjectStatusProps) {
           </TableBody>
         </Table>
       </div>
-      <Pagination className="mt-4 justify-end">
-        <PaginationContent>
+      <Pagination className="mt-2 justify-end">
+        <PaginationContent className="gap-1">
           <PaginationItem>
-            <PaginationPrevious href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)) }} aria-disabled={page === 1} className={page === 1 ? "pointer-events-none opacity-50" : undefined} />
+            <PaginationPrevious href="#" size="sm" text="" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)) }} aria-disabled={page === 1} className={page === 1 ? "pointer-events-none opacity-50 h-7 px-2 text-xs" : "h-7 px-2 text-xs"} />
           </PaginationItem>
           {Array.from({ length: totalPages }).map((_, i) => (
             <PaginationItem key={i}>
-              <PaginationLink href="#" isActive={page === i + 1} onClick={(e) => { e.preventDefault(); setPage(i + 1) }}>
+              <PaginationLink href="#" size="icon-sm" isActive={page === i + 1} onClick={(e) => { e.preventDefault(); setPage(i + 1) }} className="h-7 w-7 text-xs">
                 {i + 1}
               </PaginationLink>
             </PaginationItem>
           ))}
           <PaginationItem>
-            <PaginationNext href="#" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(totalPages, p + 1)) }} aria-disabled={page === totalPages} className={page === totalPages ? "pointer-events-none opacity-50" : undefined} />
+            <PaginationNext href="#" size="sm" text="" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(totalPages, p + 1)) }} aria-disabled={page === totalPages} className={page === totalPages ? "pointer-events-none opacity-50 h-7 px-2 text-xs" : "h-7 px-2 text-xs"} />
           </PaginationItem>
         </PaginationContent>
       </Pagination>
