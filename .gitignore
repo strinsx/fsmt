@@ -36,6 +36,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+<<<<<<< HEAD
+# serwist
+public/sw*
+public/workbox-*
+
+=======
+>>>>>>> origin/main
 # typescript
 *.tsbuildinfo
 next-env.d.ts
