@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Card, CardContent } from "@/components/ui/card"
+import { SettingsPage } from "@/components/settings/settings-page"
 
 export default function Page() {
   return (
@@ -10,14 +10,7 @@ export default function Page() {
         <Separator orientation="vertical" className="mr-2 h-4" />
         <h1 className="text-sm font-medium">Settings</h1>
       </header>
-      <div className="flex flex-1 flex-col p-4">
-        <Card className="flex flex-1 items-center justify-center p-8">
-          <CardContent className="text-center">
-            <p className="text-sm font-medium">Settings placeholder</p>
-            <p className="text-xs text-muted-foreground">Allocation period, payout frequency, and account settings will appear here.</p>
-          </CardContent>
-        </Card>
-      </div>
+      <SettingsPage />
     </>
   )
 }
