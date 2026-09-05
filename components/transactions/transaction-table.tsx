@@ -18,6 +18,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
       <Table>
         <TableHeader className="[&_tr]:border-0">
           <TableRow className="border-0 hover:bg-transparent">
+            <TableHead>Transaction ID</TableHead>
             <TableHead>Transaction Name</TableHead>
             <TableHead>Date Created</TableHead>
             <TableHead>Type</TableHead>
@@ -26,7 +27,8 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
         </TableHeader>
         <TableBody>
           {transactions.map((transaction) => (
-            <TableRow key={transaction.id} className="border-0">
+            <TableRow key={transaction.id} className="border-b">
+              <TableCell className="font-mono text-xs text-muted-foreground">{transaction.id}</TableCell>
               <TableCell className="font-medium">{transaction.name}</TableCell>
               <TableCell className="text-muted-foreground">{transaction.dateCreated}</TableCell>
               <TableCell>{transaction.type}</TableCell>

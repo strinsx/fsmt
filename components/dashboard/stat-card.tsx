@@ -41,8 +41,9 @@ export function StatCardSkeleton({ className }: { className?: string }) {
       <CardHeader>
         <Skeleton className="h-4 w-32" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="gap-1.5">
         <Skeleton className="h-7 w-28" />
+        <Skeleton className="h-3 w-40" />
       </CardContent>
     </Card>
   )
