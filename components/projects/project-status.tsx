@@ -4,9 +4,9 @@ import * as React from "react"
 import { FolderKanban, MoreHorizontal, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 type Project = {
   id: string
@@ -45,7 +45,7 @@ function StatusBadge({ status }: { status: Project["status"] }) {
   return <Badge variant={variant} className="h-5 px-1.5 text-[10px]">{label}</Badge>
 }
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 12
 
 export function ProjectStatus({ projects }: ProjectStatusProps) {
   const [page, setPage] = React.useState(1)
@@ -80,44 +80,31 @@ export function ProjectStatus({ projects }: ProjectStatusProps) {
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden rounded-xl bg-transparent">
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader className="[&_tr]:border-0">
-            <TableRow className="border-0 hover:bg-transparent">
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Project ID</TableHead>
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Project Name</TableHead>
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Source</TableHead>
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Date</TableHead>
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Amount</TableHead>
-              <TableHead className="px-2.5 py-2 text-xs font-medium text-muted-foreground">Status</TableHead>
-              <TableHead className="w-8 px-2.5 py-2">
-                <span className="sr-only">Actions</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedProjects.map((project) => (
-              <TableRow key={project.id} className="border-0 h-9">
-                <TableCell className="px-2.5 py-2 font-mono text-xs font-medium">{project.id}</TableCell>
-                <TableCell className="px-2.5 py-2 text-xs font-medium">{project.name}</TableCell>
-                <TableCell className="px-2.5 py-2 text-xs text-foreground">{project.source}</TableCell>
-                <TableCell className="px-2.5 py-2 text-xs text-muted-foreground">{project.date}</TableCell>
-                <TableCell className="px-2.5 py-2 text-xs font-medium">{project.amount}</TableCell>
-                <TableCell className="px-2.5 py-2">
-                  <StatusBadge status={project.status} />
-                </TableCell>
-                <TableCell className="px-2.5 py-2">
-                  <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${project.name}`}>
-                    <MoreHorizontal />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+    <div className="flex flex-1 flex-col gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {paginatedProjects.map((project) => (
+          <Card key={project.id} size="sm">
+            <CardHeader>
+              <CardTitle className="pr-8 text-sm leading-tight">{project.name}</CardTitle>
+              <CardAction>
+                <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${project.name}`}>
+                  <MoreHorizontal />
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <CardContent>
+              <p className="font-mono text-xs text-muted-foreground">{project.id}</p>
+              <p className="text-xs text-muted-foreground">{project.source}</p>
+              <p className="text-xs text-muted-foreground">{project.date}</p>
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-sm font-semibold">{project.amount}</span>
+                <StatusBadge status={project.status} />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-      <Pagination className="mt-2 justify-end">
+      <Pagination className="justify-end">
         <PaginationContent className="gap-1">
           <PaginationItem>
             <PaginationPrevious href="#" size="sm" text="" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)) }} aria-disabled={page === 1} className={page === 1 ? "pointer-events-none opacity-50 h-7 px-2 text-xs" : "h-7 px-2 text-xs"} />

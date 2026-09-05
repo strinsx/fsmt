@@ -1,360 +1,526 @@
 # Dashboard Components
 
-## Requirements
+## Overview
 
-### 1. Dashboard Overview
+Refactor the existing **Dashboard module** to match the provided wireframe.
 
-Implement the initial dashboard UI for the `/` route.
+This is a **UI/component-structure refactor**, not a data-layer rewrite.
 
-The dashboard should provide a quick overview of the user's current financial/project status.
+The refactor should include:
 
-The desktop layout should consist of:
+- Welcome header (title + muted subtext)
+- Income overview area (primary Income Pool card + stacked stat cards)
+- Income insights area (pie chart summary card + stat card)
+- Current Ongoing Projects section with empty state
+- Responsive desktop/mobile layouts
 
-1. Three financial summary cards at the top.
-2. One large project dashboard status empty state underneath.
-
-Use **Shadcn/UI components** for the dashboard UI.
-
-The implementation must follow the existing styling, colors, typography, spacing, and theme variables defined in `global.css`.
-
-Do not introduce custom colors that conflict with the existing theme.
+Preserve any existing data-fetching or state logic already wired into the current Dashboard wherever it exists. Where no real data exists yet, use mock/placeholder data. Do not introduce new backend/Supabase logic as part of this refactor.
 
 ---
 
-## 2. Financial Summary Cards
+# 1. Before Implementation
 
-Create **three separate reusable card components**.
+Before making any changes:
 
-Each card should represent one specific financial context.
+1. Read `AGENTS.md` from the project root.
+2. Follow all instructions, conventions, architecture decisions, and coding standards defined in `AGENTS.md`.
+3. Inspect the **existing Dashboard components/files** before creating new ones.
+4. Prefer extending or restructuring existing components over building a fully parallel implementation — this is a refactor, not a rebuild.
+5. Reuse existing shared components where appropriate (e.g. the `Empty` component if it was already installed for the Projects module).
+6. Do not modify unrelated functionality.
 
-### Card 1 — Income Pool
+The implementation should integrate with the existing:
 
-Purpose:
+- Sidebar
+- Mobile bottom navigation
+- Shadcn/UI setup
+- Tailwind CSS
+- `global.css`
+- Lucide React icons
 
-> Show the amount of project money currently allocated to the income pool.
+---
+
+# 2. Page Purpose
+
+The Dashboard should give the user an at-a-glance summary of their income and ongoing projects.
+
+The refactored page should have this structure:
+
+```text
+Dashboard
+│
+├── Dashboard Header
+│   ├── "Welcome back" title
+│   └── Muted subtext
+│
+├── Income Overview (row 1)
+│   ├── Income Pool Card (primary visual hierarchy)
+│   └── Stat Stack
+│       ├── Current Salary per Month
+│       └── Next Payout Scheduled
+│
+├── Income Insights (row 2)
+│   ├── Income Chart Card (pie chart + summary)
+│   └── Stat Card (Current Salary per Month)
+│
+└── Current Ongoing Projects
+    ├── Section heading
+    └── Empty State
+```
+
+The Income Pool Card is intentionally the dominant visual element on the page — it should read as the most important piece of information, with everything else supporting it.
+
+---
+
+# 3. Dashboard Page
+
+Use the existing Dashboard route — do not create a new one.
+
+Do not recreate the sidebar inside the Dashboard page.
+
+The page content should continue to sit beside the desktop sidebar and above the mobile bottom navigation, exactly as it does today.
+
+---
+
+# 4. Component Architecture
+
+Recommended structure:
+
+```text
+components/
+└── dashboard/
+    ├── dashboard-header.tsx
+    ├── income-pool-card.tsx
+    ├── stat-card.tsx
+    ├── income-chart-card.tsx
+    ├── ongoing-projects-section.tsx
+    └── dashboard-page.tsx
+```
+
+The exact location may be adjusted to follow the existing project architecture. Map these against the current Dashboard files first — rename/relocate existing components where they already cover this responsibility instead of duplicating them.
+
+### Responsibilities
+
+#### `DashboardHeader`
+
+Responsible for:
+
+- "Welcome back" title
+- Muted subtext line
+
+#### `IncomePoolCard`
+
+Responsible for:
+
+- Displaying current accumulated income
+- Carrying the page's primary visual weight (largest/most prominent card)
+
+#### `StatCard`
+
+Responsible for:
+
+- A single reusable small metric card (label + value)
+- Used three times in this layout: **Current Salary per Month**, **Next Payout Scheduled**, and the second **Current Salary per Month** card
+
+Build this as one reusable component driven by props rather than three near-identical one-off components — the wireframe itself repeats the same card shape three times.
+
+#### `IncomeChartCard`
+
+Responsible for:
+
+- Shadcn pie chart
+- A short quick-summary of income pool acquisition/breakdown
+
+#### `OngoingProjectsSection`
+
+Responsible for:
+
+- "Current Ongoing Projects" section heading
+- Empty state when no projects exist
+- Should eventually render real project status content
+
+#### `DashboardPage`
+
+Responsible for composing the components together.
+
+Example:
+
+```tsx
+<DashboardHeader />
+
+<IncomeOverviewRow />
+
+<IncomeInsightsRow />
+
+<OngoingProjectsSection />
+```
+
+Do not place all functionality into one large component.
+
+---
+
+# 5. Dashboard Header
+
+## 5.1 Title
 
 Display:
 
-* Card title: `Income Pool`
-* Amount/value
-* Supporting description explaining what the amount represents
+```text
+Welcome back
+```
 
-Example:
+## 5.2 Subtext
+
+Display a muted description line beneath the title (e.g. a greeting detail or short summary). Use `text-muted-foreground` and the app's existing heading typography — do not introduce custom font sizes or colors.
+
+---
+
+# 6. Income Overview (Row 1)
+
+Left: `IncomePoolCard` (dominant). Right: a vertical stack of two `StatCard`s (**Current Salary per Month**, **Next Payout Scheduled**), matching the Income Pool Card's total height.
+
+Use a responsive grid, with the Income Pool Card spanning more columns than the stat stack:
+
+```tsx
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <IncomePoolCard className="lg:col-span-2" />
+
+  <div className="flex flex-col gap-4">
+    <StatCard label="Current Salary" description="per month" value="—" />
+    <StatCard label="Next Payout" description="scheduled" value="—" />
+  </div>
+</div>
+```
+
+---
+
+# 7. Income Insights (Row 2)
+
+Left: `IncomeChartCard` (pie chart + summary), wider. Right: a single `StatCard` (**Current Salary per Month**) matching the chart card's height.
+
+```tsx
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <IncomeChartCard className="lg:col-span-2" />
+
+  <StatCard label="Current Salary" description="per month" value="—" />
+</div>
+```
+
+> Note: the wireframe shows **"Current Salary per Month"** twice (once in Row 1, once in Row 2). Implement literally as shown for now. Flag this with design/product — Row 2's card may be intended to show a different metric (e.g. YTD income, average payout) rather than a duplicate.
+
+---
+
+# 8. Income Pool Card
+
+`IncomePoolCard` should be the visual anchor of the page:
+
+- Larger padding and a larger figure/heading style than the stat cards
+- Displays the current accumulated income total
+- Optional muted description line under the figure
+
+Do not implement income calculation logic — display a mock/placeholder value or an existing value already computed elsewhere in the app.
+
+---
+
+# 9. Stat Card
+
+`StatCard` is a small, reusable metric card. Suggested props:
+
+```tsx
+type StatCardProps = {
+  label: string;
+  description?: string;
+  value: string;
+  icon?: LucideIcon;
+};
+```
+
+Use the Shadcn `Card` primitives (`Card`, `CardHeader`, `CardContent`) or the existing card pattern already used elsewhere on the Dashboard, so styling stays consistent.
+
+---
+
+# 10. Income Chart Card
+
+Use the Shadcn chart component (built on Recharts). Install if it does not already exist:
+
+```bash
+npx shadcn@latest add chart
+```
+
+Render a pie chart with a short quick-summary line describing the income pool breakdown. Use mock/placeholder chart data for now — do not wire it to a real income-calculation source yet.
+
+Ensure the summary text is also present outside the chart itself (not only as a chart legend), so the information isn't communicated through color alone.
+
+---
+
+# 11. Current Ongoing Projects Section
+
+`OngoingProjectsSection` contains:
+
+- A section heading: `Current Ongoing Projects` (same visual weight as "Welcome back", not muted)
+- A Shadcn `Empty` component for the no-projects state
+
+Reuse the existing `Empty` component and its installation if it was already added as part of the Projects module — do not reinstall or duplicate it.
+
+Consider whether this section can directly reuse the `ProjectStatus` component built for the Projects page (Section 8 of the Projects module spec), since its responsibility already covers "empty state vs. project content." If reuse isn't straightforward without over-coupling the two modules, a lightweight local empty state is acceptable for now.
+
+---
+
+# 12. Shadcn/UI Requirements
+
+Use:
+
+- `Card`
+- `Empty`
+- `Chart` (pie)
+- Existing Shadcn layout components where appropriate
+
+Do not manually recreate these components. Install any missing ones via the Shadcn CLI. Do not reinstall components that already exist.
+
+---
+
+# 13. Icons
+
+Use `lucide-react` for all interface icons.
+
+| Purpose | Icon |
+|---|---|
+| Income / Salary | `Wallet` |
+| Next Payout | `CalendarClock` |
+| Ongoing Projects heading | `FolderKanban` |
+
+These are suggestions only — follow the project's existing icon conventions if they differ. Do not introduce another icon library.
+
+---
+
+# 14. Styling
+
+All styling must follow the application's existing design system.
+
+Use:
+
+- Shadcn/UI
+- Tailwind CSS
+- `global.css`
+- Existing CSS variables and theme tokens
+
+Do not introduce arbitrary colors or hardcoded hex values unless already part of the established design system. Prefer semantic classes such as `bg-background`, `text-foreground`, `text-muted-foreground`, `border`, `bg-card`.
+
+The refactored Dashboard should continue to visually match the Sidebar and the rest of the app (including the Projects and Transactions modules, if already implemented).
+
+---
+
+# 15. Desktop Layout
+
+```text
+┌───────────────────────────────────────────────────────────────────┐
+│                                                                   │
+│  welcome back                                                    │
+│  muted text                                                      │
+│                                                                   │
+│  ┌───────────────────────────────┐   ┌─────────────────────────┐ │
+│  │                               │   │ current salary per month │ │
+│  │        Income Pool            │   ├─────────────────────────┤ │
+│  │  (primary visual hierarchy)   │   │ next payout scheduled    │ │
+│  │                               │   └─────────────────────────┘ │
+│  └───────────────────────────────┘                               │
+│                                                                   │
+│  ┌───────────────────────────────┐   ┌─────────────────────────┐ │
+│  │  pie chart + quick summary     │   │ current salary per month │ │
+│  └───────────────────────────────┘   └─────────────────────────┘ │
+│                                                                   │
+│  current ongoing projects                                        │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │                    empty state (shadcn)                     │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+# 16. Responsive Design
+
+On mobile, collapse both rows to a single column, in this order:
 
 ```text
 Income Pool
-₱100,000.00
-
-Project money currently allocated
-```
-
-The actual value can be placeholder/mock data for now.
-
----
-
-### Card 2 — Current Salary Per Month
-
-Purpose:
-
-> Show the current monthly salary the user should give themselves.
-
-Display:
-
-* Card title: `Current Salary Per Month`
-* Monthly salary amount
-* Supporting description
-
-Example:
-
-```text
-Current Salary Per Month
-₱25,000.00
-
-Your current monthly salary allocation
-```
-
-The actual value can be placeholder/mock data for now.
-
----
-
-### Card 3 — Next Payout Scheduled
-
-Purpose:
-
-> Show when the user's next salary payout is scheduled.
-
-Display:
-
-* Card title: `Next Payout Scheduled`
-* Next payout date
-* Supporting information such as the payout period or number of days remaining
-
-Example:
-
-```text
+Current Salary per Month
 Next Payout Scheduled
-September 15, 2026
-
-11 days remaining
+Income Chart (pie + summary)
+Current Salary per Month
+Current Ongoing Projects
+Empty State
 ```
 
-The actual date/value can be placeholder/mock data for now.
+Grid classes should collapse from `lg:grid-cols-3` to a single column below the `lg` breakpoint. Cards should use the full available width, and the Empty state should remain centered and readable. Do not allow horizontal overflow.
 
 ---
 
-## 3. Shadcn/UI Cards
+# 17. Mobile Navigation Compatibility
 
-Use the official Shadcn/UI `Card` components.
-
-Each financial summary should be implemented using Shadcn's card primitives rather than manually-created containers.
-
-Use appropriate components such as:
-
-```text
-Card
-CardHeader
-CardTitle
-CardDescription
-CardContent
-```
-
-Use the existing theme variables from `global.css`.
-
-Do not hardcode arbitrary colors.
+The existing mobile bottom navigation should remain visible and functional. Page content must not be hidden underneath it — preserve/apply the same bottom padding pattern already used elsewhere in the app. Do not modify the mobile navigation unless necessary.
 
 ---
 
-## 4. Loading States
+# 18. Accessibility
 
-Implement loading states for the three financial cards using **Shadcn/UI Skeleton**.
+### Stat Cards
 
-The skeleton state should approximate the actual card layout.
+Label and value should use appropriate heading/text semantics so screen readers announce them meaningfully (not just styled `div`s with no structure).
 
-For example:
+### Chart
 
-```text
-┌──────────────────────────────┐
-│ ████████████                 │
-│                              │
-│ ████████████████             │
-│ █████████                    │
-└──────────────────────────────┘
-```
+The pie chart's "quick summary" text should convey the same information as the chart visually communicates — do not rely on chart color alone.
 
-The skeleton should be reusable where practical.
+### Empty State
 
-Do not use text such as `Loading...` as the primary loading state when a Skeleton component can represent the layout.
+Follow the accessibility behavior already established by the Shadcn `Empty` component.
 
 ---
 
-## 5. Component Structure
+# 19. Data Handling
 
-Keep the three cards as separate components.
+Do not add new Supabase queries, API routes, or server actions as part of this refactor. If the current Dashboard already fetches real data (income, salary, payout, projects), preserve that wiring and pass it into the new components via props, for example:
 
-Prefer a structure similar to:
+```tsx
+<IncomePoolCard amount={currentIncome} />
+<StatCard label="Current Salary" value={monthlySalary} />
+```
+
+Where no real data source exists yet, use mock/placeholder values. Components should accept data via props rather than fetching internally, so real values can be swapped in without restructuring.
+
+---
+
+# 20. Avoid Overengineering
+
+This task is a layout/component refactor only. Do not implement:
+
+- New income/payout calculation logic
+- A real chart data pipeline
+- Project-fetching logic beyond what already exists
+- New Supabase integration
+- Drill-down or detail views for any card
+- Animations beyond what Shadcn/Recharts provide by default
+
+These can be addressed in future tasks.
+
+---
+
+# 21. Suggested File Structure
 
 ```text
 components/
 ├── dashboard/
+│   ├── dashboard-header.tsx
 │   ├── income-pool-card.tsx
-│   ├── current-salary-card.tsx
-│   ├── next-payout-card.tsx
-│   └── project-dashboard-status.tsx
+│   ├── stat-card.tsx
+│   ├── income-chart-card.tsx
+│   ├── ongoing-projects-section.tsx
+│   └── dashboard-page.tsx
+│
 └── ui/
     ├── card.tsx
-    ├── skeleton.tsx
+    ├── chart.tsx
     └── empty.tsx
 ```
 
-The exact structure may be adjusted to match the existing project architecture and the instructions in `AGENTS.md`.
-
-Avoid putting all three cards into one large component.
+Use the existing project's folder conventions if they differ. Do not create duplicate UI primitives.
 
 ---
 
-# Project Dashboard Status
+# 22. Component Composition
 
-## 6. Empty State Component
+```tsx
+<DashboardPage>
+  <DashboardHeader />
 
-Below the three financial cards, create a large **Project Dashboard Status** section.
+  <IncomeOverviewRow>
+    <IncomePoolCard />
+    <StatCard label="Current Salary" description="per month" value={monthlySalary} />
+    <StatCard label="Next Payout" description="scheduled" value={nextPayoutDate} />
+  </IncomeOverviewRow>
 
-Install the Shadcn/UI Empty component:
+  <IncomeInsightsRow>
+    <IncomeChartCard />
+    <StatCard label="Current Salary" description="per month" value={monthlySalary} />
+  </IncomeInsightsRow>
 
-```bash
-npx shadcn@latest add empty
+  <OngoingProjectsSection projects={projects} />
+</DashboardPage>
 ```
 
-Use the generated Shadcn `Empty` component for this section.
-
-The purpose of this section is to eventually monitor the status of the user's projects.
-
-For the current implementation, this should be an empty/placeholder state.
+Keep responsibilities separated.
 
 ---
-
-## 7. Project Dashboard Status Content
-
-The section should communicate that project monitoring will appear here.
-
-Suggested content:
-
-```text
-Project Dashboard Status
-
-No projects to display yet.
-
-Create or add a project to start monitoring
-your project status and financial progress.
-```
-
-Use the Shadcn Empty component primitives rather than creating a custom empty-state container.
-
-If appropriate, include a Lucide icon to visually represent projects.
-
-Do not implement actual project-management functionality as part of this task.
-
----
-
-# Desktop Layout
-
-## 8. Dashboard Structure
-
-The desktop dashboard should follow this layout:
-
-```text
-┌─────────────────────────────────────────────────────────────┐
-│                         Dashboard                           │
-│                                                             │
-│  ┌────────────────┐ ┌────────────────┐ ┌────────────────┐  │
-│  │ Income Pool    │ │ Current Salary │ │ Next Payout    │  │
-│  │                │ │                │ │                │  │
-│  │ ₱100,000       │ │ ₱25,000/month  │ │ Sep 15, 2026   │  │
-│  │ Project funds  │ │ Monthly salary │ │ 11 days left   │  │
-│  └────────────────┘ └────────────────┘ └────────────────┘  │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────────┐ │
-│  │                                                         │ │
-│  │               Project Dashboard Status                  │ │
-│  │                                                         │ │
-│  │                  No projects yet                        │ │
-│  │                                                         │ │
-│  │       Create or add a project to monitor status         │ │
-│  │                                                         │ │
-│  └─────────────────────────────────────────────────────────┘ │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### Card Layout
-
-On desktop:
-
-* Display all three cards in one horizontal row.
-* Cards should have equal or balanced widths.
-* Maintain consistent spacing between cards.
-* Cards should remain visually compact compared with the project dashboard section.
-
-### Project Dashboard Layout
-
-Below the cards:
-
-* Display one large Project Dashboard Status section.
-* It should occupy the majority of the available dashboard width.
-* Use the Shadcn Empty component.
-* Give the section enough vertical space to function as the future project monitoring area.
-
----
-
-# Responsive Behavior
-
-The dashboard must remain responsive.
-
-On smaller screens:
-
-* The three cards may stack vertically or use a responsive grid.
-* The Project Dashboard Status should remain below the cards.
-* Avoid horizontal overflow.
-* Ensure the layout works correctly alongside the mobile bottom navigation implemented in the previous task.
-* Account for the mobile navigation's bottom safe area/padding.
-
-Suggested responsive structure:
-
-```text
-Mobile
-
-┌───────────────────────┐
-│ Dashboard             │
-│                       │
-│ ┌───────────────────┐ │
-│ │ Income Pool       │ │
-│ └───────────────────┘ │
-│                       │
-│ ┌───────────────────┐ │
-│ │ Current Salary    │ │
-│ └───────────────────┘ │
-│                       │
-│ ┌───────────────────┐ │
-│ │ Next Payout       │ │
-│ └───────────────────┘ │
-│                       │
-│ ┌───────────────────┐ │
-│ │                   │ │
-│ │ Project Dashboard │ │
-│ │ Status             │ │
-│ │                   │ │
-│ └───────────────────┘ │
-│                       │
-├───────────────────────┤
-│ Dashboard Projects ...│
-└───────────────────────┘
-```
-
----
-
-# Styling Requirements
-
-All dashboard components must follow the project's existing design system.
-
-Use:
-
-* Shadcn/UI
-* Tailwind CSS
-* `global.css`
-* Existing theme variables
-* `lucide-react`
-
-Do not:
-
-* Introduce a separate UI library.
-* Create arbitrary color values that conflict with `global.css`.
-* Recreate Shadcn components manually.
-* Add unnecessary dependencies.
-* Implement backend/database functionality for these placeholder values.
-
-The dashboard should visually feel like part of the same application as the existing sidebar.
-
 
 # Complete When
 
-* [ ] `AGENTS.md` has been read and followed.
-* [ ] Shadcn `Card` components are used.
-* [ ] Shadcn `Skeleton` is used for loading states.
-* [ ] `npx shadcn@latest add empty` has been installed successfully.
-* [ ] Shadcn `Empty` is used for the Project Dashboard Status.
-* [ ] Three separate card components have been created.
-* [ ] Income Pool card displays allocated project money.
-* [ ] Current Salary Per Month card displays the current monthly salary allocation.
-* [ ] Next Payout Scheduled card displays the next salary payout date.
-* [ ] Each card has an appropriate loading/skeleton state.
-* [ ] Cards are displayed in a three-column row on desktop.
-* [ ] Project Dashboard Status appears below the three cards.
-* [ ] Project Dashboard Status uses the Shadcn Empty component.
-* [ ] Dashboard is responsive on mobile.
-* [ ] Dashboard does not conflict with the mobile bottom navigation.
-* [ ] Styling follows the existing `global.css` theme.
-* [ ] No arbitrary colors are introduced.
-* [ ] No additional UI libraries are added.
-* [ ] Components are appropriately separated and reusable.
-* [ ] Placeholder/mock data is used without introducing unnecessary backend logic.
-* [ ] The application builds successfully.
-* [ ] Existing sidebar/navigation functionality remains intact.
+## Project Structure
+
+- [ ] `AGENTS.md` has been read and followed.
+- [ ] Existing Dashboard components/files have been inspected before refactoring.
+- [ ] Existing components are reused/restructured rather than duplicated.
+- [ ] Dashboard-specific components are separated appropriately.
+
+## Header
+
+- [ ] `DashboardHeader` exists.
+- [ ] "Welcome back" title is displayed.
+- [ ] Muted subtext is displayed beneath the title.
+
+## Income Overview
+
+- [ ] `IncomePoolCard` exists and is visually the most prominent element on the page.
+- [ ] `StatCard` is implemented as a single reusable component.
+- [ ] "Current Salary per Month" stat card is displayed.
+- [ ] "Next Payout Scheduled" stat card is displayed.
+- [ ] Income Pool Card and the stat stack are arranged side-by-side on desktop, matching the wireframe.
+
+## Income Insights
+
+- [ ] `IncomeChartCard` exists using the Shadcn chart component.
+- [ ] The chart includes a plain-text quick summary, not just a visual legend.
+- [ ] A second `StatCard` ("Current Salary per Month") sits beside the chart, matching the wireframe.
+
+## Ongoing Projects
+
+- [ ] `OngoingProjectsSection` exists.
+- [ ] "Current Ongoing Projects" heading is displayed.
+- [ ] Shadcn `Empty` component is reused (not reinstalled/duplicated) for the empty state.
+
+## Styling
+
+- [ ] Shadcn/UI components are used.
+- [ ] Tailwind CSS is used consistently.
+- [ ] `global.css` theme variables are respected.
+- [ ] No arbitrary colors are introduced.
+- [ ] No additional UI or icon library is introduced.
+- [ ] Styling matches the Sidebar and rest of the app.
+
+## Responsive
+
+- [ ] Desktop layout matches the provided wireframe.
+- [ ] Layout collapses to a single column on mobile in the correct order.
+- [ ] No horizontal overflow occurs.
+- [ ] Existing mobile bottom navigation remains functional and unobstructed.
+
+## Scope
+
+- [ ] No new Supabase integration is added.
+- [ ] No new income/payout calculation logic is added.
+- [ ] No new project-fetching logic is added.
+- [ ] Existing data wiring (if any) is preserved, not removed.
+- [ ] No unrelated features are implemented.
+
+## Verification
+
+- [ ] Application starts successfully.
+- [ ] Dashboard page renders successfully.
+- [ ] Desktop layout is visually correct.
+- [ ] Mobile layout is visually correct.
+- [ ] No TypeScript errors are introduced.
+- [ ] No lint/build errors are introduced.
+- [ ] Existing Sidebar still works.
+- [ ] Existing mobile bottom navigation still works.
+- [ ] Existing Dashboard data (if any) still displays correctly after the refactor.
