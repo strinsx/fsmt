@@ -18,9 +18,11 @@ type ProjectsPageProps = {
 export function ProjectsPage({ projects = [] }: ProjectsPageProps) {
   return (
     <div className="flex flex-1 flex-col p-6 md:p-8 lg:p-10">
-      <div className="flex flex-1 flex-col gap-8 rounded-xl p-8 md:min-h-0 md:gap-10 md:p-10 lg:p-12">
-        <ProjectHeader />
+      <ProjectHeader />
+      <div className="mt-8">
         <ProjectFilters />
+      </div>
+      <div className="mt-8">
         <ProjectStatus projects={projects} />
       </div>
     </div>

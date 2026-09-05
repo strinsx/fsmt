@@ -33,7 +33,8 @@ function StatusBadge({ status }: { status: Project["status"] }) {
 }
 
 export function ProjectDashboardStatus({ projects }: ProjectDashboardStatusProps) {
-  const displayProjects = projects && projects.length > 0 ? projects : mockProjects
+  const filteredProjects = (projects && projects.length > 0 ? projects : mockProjects).filter((p) => p.status === "active" || p.status === "pending")
+  const displayProjects = filteredProjects
 
   if (displayProjects.length === 0) {
     return (
@@ -59,7 +60,8 @@ export function ProjectDashboardStatus({ projects }: ProjectDashboardStatusProps
   }
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden rounded-xl bg-transparent">
+    <div className="flex flex-1 flex-col gap-4 overflow-hidden rounded-xl bg-transparent">
+      <h3 className="text-sm font-semibold tracking-tight">Current ongoing projects</h3>
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="[&_tr]:border-0">
