@@ -3,23 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-<<<<<<< HEAD
     "dev": "concurrently -p none \"serwist build --watch\" \"next dev --turbopack\"",
     "dev:once": "serwist build && next dev --turbopack",
     "build": "next build && serwist build",
-=======
-    "dev": "next dev",
-    "build": "next build",
->>>>>>> origin/main
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-<<<<<<< HEAD
     "@serwist/next": "^9.5.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.2.5",
     "date-fns": "^4.4.0",
     "lucide-react": "^1.40.0",
     "next": "16.3.4",
@@ -27,35 +22,21 @@
     "react": "19.2.8",
     "react-day-picker": "^10.0.1",
     "react-dom": "19.2.8",
+    "recharts": "^3.8.0",
     "serwist": "^9.5.12",
     "shadcn": "^4.20.1",
     "sonner": "^2.0.8",
-=======
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.40.0",
-    "next": "16.3.4",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "shadcn": "^4.20.1",
->>>>>>> origin/main
     "tailwind-merge": "^3.6.0",
     "tw-animate-css": "^1.4.0"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@serwist/cli": "^9.5.12",
-=======
->>>>>>> origin/main
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-<<<<<<< HEAD
     "concurrently": "^10.0.5",
     "esbuild": "^0.28.2",
-=======
->>>>>>> origin/main
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
