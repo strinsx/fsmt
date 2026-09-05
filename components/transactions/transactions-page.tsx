@@ -19,6 +19,9 @@ const mockTransactions: Transaction[] = [
   { id: "10", name: "Equipment Purchase", dateCreated: "2026-07-28", type: "Expense", amount: -35000 },
   { id: "11", name: "Consulting Retainer", dateCreated: "2026-07-22", type: "Income", amount: 30000 },
   { id: "12", name: "Marketing Campaign", dateCreated: "2026-07-18", type: "Expense", amount: -15000 },
+  { id: "13", name: "UI Audit — FinTech", dateCreated: "2026-07-15", type: "Income", amount: 55000 },
+  { id: "14", name: "Domain Renewal", dateCreated: "2026-07-12", type: "Expense", amount: -1800 },
+  { id: "15", name: "Landing Page Revamp", dateCreated: "2026-07-08", type: "Income", amount: 38000 },
 ]
 
 const ITEMS_PER_PAGE = 15

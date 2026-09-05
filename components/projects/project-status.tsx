@@ -2,11 +2,10 @@
 
 import * as React from "react"
 import { FolderKanban, MoreHorizontal, Plus } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 type Project = {
   id: string
@@ -39,13 +38,7 @@ type ProjectStatusProps = {
   projects?: Project[]
 }
 
-function StatusBadge({ status }: { status: Project["status"] }) {
-  const variant = status === "active" ? "default" : status === "pending" ? "secondary" : "outline"
-  const label = status.charAt(0).toUpperCase() + status.slice(1)
-  return <Badge variant={variant} className="h-5 px-1.5 text-[10px]">{label}</Badge>
-}
-
-const ITEMS_PER_PAGE = 12
+const ITEMS_PER_PAGE = 15
 
 export function ProjectStatus({ projects }: ProjectStatusProps) {
   const [page, setPage] = React.useState(1)
@@ -81,31 +74,42 @@ export function ProjectStatus({ projects }: ProjectStatusProps) {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {paginatedProjects.map((project) => (
-          <Card key={project.id} size="sm">
-            <CardHeader>
-              <CardTitle className="pr-8 text-sm leading-tight">{project.name}</CardTitle>
-              <CardAction>
-                <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${project.name}`}>
-                  <MoreHorizontal />
-                </Button>
-              </CardAction>
-            </CardHeader>
-            <CardContent>
-              <p className="font-mono text-xs text-muted-foreground">{project.id}</p>
-              <p className="text-xs text-muted-foreground">{project.source}</p>
-              <p className="text-xs text-muted-foreground">{project.date}</p>
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-sm font-semibold">{project.amount}</span>
-                <StatusBadge status={project.status} />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="overflow-hidden rounded-xl border-0">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-transparent hover:bg-transparent">
+              <TableHead>Project ID</TableHead>
+              <TableHead>Project Name</TableHead>
+              <TableHead>Source</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="w-10">
+                <span className="sr-only">Action</span>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {paginatedProjects.map((project) => (
+              <TableRow key={project.id}>
+                <TableCell className="font-mono text-xs text-muted-foreground">{project.id}</TableCell>
+                <TableCell className="font-medium">{project.name}</TableCell>
+                <TableCell className="text-muted-foreground">{project.source}</TableCell>
+                <TableCell className="font-medium">{project.amount}</TableCell>
+                <TableCell className="text-muted-foreground">{project.date}</TableCell>
+                <TableCell>
+                  <Button variant="ghost" size="icon-xs" aria-label={`Actions for ${project.name}`}>
+                    <MoreHorizontal />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
-      <Pagination className="justify-end">
-        <PaginationContent className="gap-1">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">Showing {paginatedProjects.length} out of 50 projects</p>
+        <Pagination className="justify-end mx-0 w-auto">
+          <PaginationContent className="gap-1">
           <PaginationItem>
             <PaginationPrevious href="#" size="sm" text="" onClick={(e) => { e.preventDefault(); setPage((p) => Math.max(1, p - 1)) }} aria-disabled={page === 1} className={page === 1 ? "pointer-events-none opacity-50 h-7 px-2 text-xs" : "h-7 px-2 text-xs"} />
           </PaginationItem>
@@ -119,8 +123,9 @@ export function ProjectStatus({ projects }: ProjectStatusProps) {
           <PaginationItem>
             <PaginationNext href="#" size="sm" text="" onClick={(e) => { e.preventDefault(); setPage((p) => Math.min(totalPages, p + 1)) }} aria-disabled={page === totalPages} className={page === totalPages ? "pointer-events-none opacity-50 h-7 px-2 text-xs" : "h-7 px-2 text-xs"} />
           </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   )
 }
