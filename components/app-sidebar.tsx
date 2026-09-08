@@ -19,20 +19,13 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-const data = {
-  user: {
-    name: "Alex Morgan",
-    email: "alex@fsmt.dev",
-    avatar: "/avatars/shadcn.jpg",
+const teams = [
+  {
+    name: "FSMT",
+    logo: Wallet,
+    plan: "Salary Allocation",
   },
-  teams: [
-    {
-      name: "FSMT",
-      logo: Wallet,
-      plan: "Salary Allocation",
-    },
-  ],
-}
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
@@ -73,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
