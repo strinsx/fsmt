@@ -5,11 +5,7 @@ import { SerwistProvider } from "@serwist/next/react"
 import type { Metadata, Viewport } from "next"
 import { cn } from "@/lib/utils"
 import { ThemeSync } from "@/components/theme-sync"
-import { AppSidebar } from "@/components/app-sidebar"
-import { MobileNav } from "@/components/mobile-nav"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
-import { TooltipProvider } from "@/components/ui/tooltip"
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-sans", weight: ["300", "400", "500", "600", "700"] })
 const ptSerif = PT_Serif({ subsets: ["latin"], variable: "--font-serif", weight: ["400", "700"] })
@@ -72,18 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <ThemeSync />
-          <TooltipProvider>
-            <SerwistProvider swUrl="/sw.js" disable={process.env.NODE_ENV !== "production"}>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset className="pb-16 md:pb-0">
-                  {children}
-                </SidebarInset>
-                <MobileNav />
-              </SidebarProvider>
-              <Toaster richColors position="top-right" />
-            </SerwistProvider>
-          </TooltipProvider>
+          <SerwistProvider swUrl="/sw.js" disable={process.env.NODE_ENV !== "production"}>
+            {children}
+            <Toaster richColors position="top-right" />
+          </SerwistProvider>
         </ThemeProvider>
       </body>
     </html>
