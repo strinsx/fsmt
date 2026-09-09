@@ -43,7 +43,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { display_name: fullName, full_name: fullName } },
     })
     if (error) {
       setLoading(false)
@@ -54,7 +54,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       const { error: profileError } = await supabase.from("profiles").upsert(
         {
           id: data.user.id,
-          full_name: fullName,
+          display_name: fullName,
           email,
         },
         { onConflict: "id" }

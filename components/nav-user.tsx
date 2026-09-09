@@ -36,15 +36,16 @@ export function NavUser() {
       const u = data.user
       if (!u) return
       const meta = (u.user_metadata ?? {}) as Record<string, string>
-      const fullName = meta.full_name || meta.name || u.email?.split("@")[0] || "User"
+      const fullName = meta.display_name || meta.full_name || meta.name || u.email?.split("@")[0] || "User"
       setUser({ name: fullName, email: u.email ?? "", avatar: meta.avatar_url ?? "" })
       supabase
         .from("profiles")
-        .select("full_name,email")
+        .select("display_name,email")
         .eq("id", u.id)
         .single()
         .then(({ data: profile }) => {
-          if (profile?.full_name) setUser((prev) => (prev ? { ...prev, name: profile.full_name } : prev))
+          const p = profile as { display_name: string | null } | null
+          if (p?.display_name) setUser((prev) => (prev ? { ...prev, name: p.display_name! } : prev))
         })
     })
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -52,7 +53,7 @@ export function NavUser() {
         setUser(null)
       } else {
         const meta = (session.user.user_metadata ?? {}) as Record<string, string>
-        const fullName = meta.full_name || meta.name || session.user.email?.split("@")[0] || "User"
+        const fullName = meta.display_name || meta.full_name || meta.name || session.user.email?.split("@")[0] || "User"
         setUser({ name: fullName, email: session.user.email ?? "", avatar: meta.avatar_url ?? "" })
       }
     })

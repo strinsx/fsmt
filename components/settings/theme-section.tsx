@@ -5,11 +5,11 @@ import { useTheme } from "next-themes"
 import { flushSync } from "react-dom"
 import { Button } from "@/components/ui/button"
 
+const subscribeToHydration = () => () => {}
+
 export function ThemeSection() {
   const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => setMounted(true), [])
+  const mounted = React.useSyncExternalStore(subscribeToHydration, () => true, () => false)
 
   const current = mounted ? (resolvedTheme === "dark" ? "dark" : "light") : "light"
 

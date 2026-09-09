@@ -39,6 +39,19 @@
 
 ## Auth and Access Model
 
+### Project persistence
+
+- `public.projects` stores the authenticated owner's `user_id`, project
+  `name`, optional `client`, optional `project_value`, `project_status`
+  (`active`, `pending`, or `completed`), and created/updated timestamps.
+- Project reads and CRUD mutations are performed server-side.
+  Presentation-only labels and colors are derived in the UI and are not
+  persisted.
+- `public.income_transactions` stores received income with its owner,
+  positive amount, received date, optional description, and optional
+  `project_id`. Transaction lists resolve the displayed transaction name
+  from the related `projects.name`; unlinked income remains supported.
+
 - Every user signs in via Supabase Auth before accessing any personal
   financial data.
 - Every financial record (transaction, category, monthly income,
@@ -47,6 +60,11 @@
 - Only the owning user can read or modify their own records — enforced
   at the database level via Supabase Row Level Security (RLS), not just
   in application code.
+- Projects follow the same ownership boundary: select, insert, update,
+  and delete access is restricted to `auth.uid() = user_id` with RLS.
+- Income transactions follow the same owner-only CRUD boundary. When a
+  transaction has a `project_id`, RLS also requires that project to have
+  the same authenticated owner.
 - Hypothetical (what-if) scenarios are isolated from actual financial
   data: they must never write to or mutate transactions, recurring
   expenses, or goals unless the user explicitly converts a scenario into
